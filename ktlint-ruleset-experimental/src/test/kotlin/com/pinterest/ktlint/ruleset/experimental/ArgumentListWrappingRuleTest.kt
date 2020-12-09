@@ -123,6 +123,11 @@ class ArgumentListWrappingRuleTest {
                 abstract class A(init: String.() -> Int)
                 class B : A({
                     toInt()
+                    toInt()
+                    toInt()
+                    toInt()
+                    toInt()
+                    toInt()
                 })
 
                 fun test(a: Any, b: (Any) -> Any) {
@@ -130,7 +135,8 @@ class ArgumentListWrappingRuleTest {
                         it.toString()
                     })
                 }
-                """.trimIndent()
+                """.trimIndent(),
+                userData = mapOf("max_line_length" to "80")
             )
         ).isEmpty()
     }
