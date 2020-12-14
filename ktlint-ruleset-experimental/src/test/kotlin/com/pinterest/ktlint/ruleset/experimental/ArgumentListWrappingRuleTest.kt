@@ -116,11 +116,10 @@ class ArgumentListWrappingRuleTest {
     }
 
     @Test
-    fun testLambdaArgumentsAreIgnored() {
+    fun testMultiLineLambdaArgumentsAreIgnored() {
         assertThat(
             ArgumentListWrappingRule().lint(
                 """
-                abstract class A(init: String.() -> Int)
                 class B : A({
                     toInt()
                     toInt()
@@ -129,14 +128,28 @@ class ArgumentListWrappingRuleTest {
                     toInt()
                     toInt()
                 })
+                """.trimIndent(),
+                userData = mapOf("max_line_length" to "80")
+            )
+        ).isEmpty()
+    }
+
+    @Test
+    fun testLambdaArgumentsAreIgnored() {
+        assertThat(
+            ArgumentListWrappingRule().lint(
+                """
+                abstract class A(init: String.() -> Int)
+                class B : A({
+                    toInt()
+                })
 
                 fun test(a: Any, b: (Any) -> Any) {
                     test(a = "1", b = {
                         it.toString()
                     })
                 }
-                """.trimIndent(),
-                userData = mapOf("max_line_length" to "80")
+                """.trimIndent()
             )
         ).isEmpty()
     }

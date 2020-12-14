@@ -69,7 +69,7 @@ class ArgumentListWrappingRule : Rule("argument-list-wrapping") {
             val putArgumentsOnSeparateLines =
                 node.textContainsIgnoringLambda('\n') ||
                     // max_line_length exceeded
-                    maxLineLength > -1 && (node.column - 1 + node.textLength) > maxLineLength
+                    !node.singleLambdaArgument() && maxLineLength > -1 && (node.column - 1 + node.textLength) > maxLineLength
             if (putArgumentsOnSeparateLines) {
                 // IDEA quirk:
                 // generic<
@@ -197,6 +197,14 @@ class ArgumentListWrappingRule : Rule("argument-list-wrapping") {
                 elementType == ElementType.COLLECTION_LITERAL_EXPRESSION && child.textContains(char) ||
                 elementType == ElementType.VALUE_ARGUMENT && child.children().any { it.textContainsIgnoringLambda(char) }
         }
+    }
+
+    private fun ASTNode.singleLambdaArgument(): Boolean {
+        return children()
+            .filter { it.elementType == ElementType.VALUE_ARGUMENT }
+            .flatMap { it.children() }
+            .filter { it.elementType == ElementType.LAMBDA_EXPRESSION }
+            .count() == 1
     }
 
     private fun ASTNode.hasTypeParameterListInFront(): Boolean =
